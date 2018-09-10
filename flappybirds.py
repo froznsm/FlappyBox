@@ -1,5 +1,4 @@
-import pygame, sys, random
-
+import pygame, sys, random, os
 
 def main(width, height, tickrate):
     res = (width, height)
@@ -7,6 +6,9 @@ def main(width, height, tickrate):
     screen = pygame.display.set_mode(res, 0, 32)
     pygame.display.set_caption("Flappy Square")
     clock = pygame.time.Clock()
+    player = os.getlogin()
+    game_font = pygame.font.SysFont('Arial', height // 15)
+    player_name_text = game_font.render("Hello There! General {}".format(player), False, (255, 0, 0))
 
     while True:
         obstacle_speed = 3
@@ -16,11 +18,11 @@ def main(width, height, tickrate):
         i = width
         j = width + distance_between_obstacles
         k = width + distance_between_obstacles * 2
-        bird_y = height//2
-        bird_x = width//5
+        bird_y = height // 2
+        bird_x = width // 5
         falling_speed = 0.1
         accel = falling_speed
-        offset1, offset2, offset3 = random.randint(-height/3, height/3), random.randint(-height/3, height/3), random.randint(-height/3, height/3)
+        offset1, offset2, offset3 = random.randint(-height / 3, height / 3), random.randint(-height / 3, height / 3), random.randint(-height / 3, height / 3)
         obstacle_counter = 0
 
         small_jump_counter = 0
@@ -28,12 +30,15 @@ def main(width, height, tickrate):
         big_jump_counter = 0
         score_overall = 0
 
-        game_font = pygame.font.SysFont('Arial', height//15)
+
 
         running = True
         while running:
             screen.fill((0, 0, 0))
             clock.tick(tickrate)
+
+            # Hello There! General Kenobi!
+            # screen.blit(player_name_text, (width // 8, height - height//8))
 
             obstacle_counter_text = game_font.render(str(obstacle_counter), False, (255, 0, 0))
             screen.blit(obstacle_counter_text, (0,0))
@@ -44,14 +49,14 @@ def main(width, height, tickrate):
             if bird_y >= height:
                 running = False
 
-            bird = pygame.Rect(bird_x, int(bird_y), height//obstacle_width, height//obstacle_width)
+            bird = pygame.Rect(bird_x, int(bird_y), height // obstacle_width, height // obstacle_width)
             pygame.draw.rect(screen, (255, 255, 255), bird, 0)
 
             # at game start move obstacles in from the side
             if k > width:
-                i -= width//(obstacle_speed*100)
-                j -= width//(obstacle_speed*100)
-                k -= width//(obstacle_speed*100)
+                i -= width // (obstacle_speed * 100)
+                j -= width // (obstacle_speed * 100)
+                k -= width // (obstacle_speed * 100)
             else:
                 # normal obstacle movement
                 i_old = i
@@ -61,7 +66,7 @@ def main(width, height, tickrate):
                 k_old = k
                 k = (k - width //(obstacle_speed * 100)) % width
                 # check if obstacle was passed
-                if i_old + obstacle_width > bird_x >= i + obstacle_width or j_old + obstacle_width> bird_x >= j + obstacle_width or k_old + obstacle_width > bird_x >= k + obstacle_width:
+                if i_old + obstacle_width > bird_x >= i + obstacle_width or j_old + obstacle_width > bird_x >= j + obstacle_width or k_old + obstacle_width > bird_x >= k + obstacle_width:
                     # scoring system
                     score_for_obstacle = 1100 - 100 * big_jump_counter - 200 * medium_jump_counter - 300 * small_jump_counter
                     # no negative score
@@ -129,11 +134,12 @@ def main(width, height, tickrate):
             pygame.display.update()
 
 
-
-
-
         game_over = game_font.render('GAME OVER', False, (255, 0, 0))
-        screen.blit(game_over, (width//6, height//6))
+        obstacle_text = game_font.render('You have passed {} obstacles'.format(obstacle_counter), False, (255, 0, 0))
+        score_text = game_font.render('and scored {} points'.format(score_overall), False, (255, 0, 0))
+        screen.blit(game_over, (width//2 - width // 18, height//6))
+        screen.blit(obstacle_text, ((width // 6) * 2, (height // 6) * 2))
+        screen.blit(score_text, ((width // 6) * 2 + (width // 20), (height // 6) * 2 + (height // 12)))
         pygame.display.update()
         pygame.time.wait(2000)
 
