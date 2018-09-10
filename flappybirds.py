@@ -40,19 +40,20 @@ def main(width, height, tickrate):
             score_text = game_font.render(str(score_overall), False, (255, 0, 0))
             screen.blit(score_text, (0, height//16+1))
 
+            # establish floor
             if bird_y >= height:
                 running = False
 
             bird = pygame.Rect(bird_x, int(bird_y), height//obstacle_width, height//obstacle_width)
             pygame.draw.rect(screen, (255, 255, 255), bird, 0)
 
-            # game start move obstacles in from the side
+            # at game start move obstacles in from the side
             if k > width:
                 i -= width//(obstacle_speed*100)
                 j -= width//(obstacle_speed*100)
                 k -= width//(obstacle_speed*100)
             else:
-                # normal movement
+                # normal obstacle movement
                 i_old = i
                 i = (i - width//(obstacle_speed * 100)) % width
                 j_old = j
@@ -61,18 +62,26 @@ def main(width, height, tickrate):
                 k = (k - width //(obstacle_speed * 100)) % width
                 # check if obstacle was passed
                 if i_old + obstacle_width > bird_x >= i + obstacle_width or j_old + obstacle_width> bird_x >= j + obstacle_width or k_old + obstacle_width > bird_x >= k + obstacle_width:
+                    # scoring system
                     score_for_obstacle = 1100 - 100 * big_jump_counter - 200 * medium_jump_counter - 300 * small_jump_counter
+                    # no negative score
                     if score_for_obstacle < 0:
                         score_for_obstacle = 0
+                    # first obstacle does not give any points
                     if obstacle_counter == 0:
                         score_for_obstacle = 0
+                    # establish obstacles being infinitely high
                     if bird_y < 0:
                         running = False
+                    # increment obstacle counter
                     obstacle_counter += 1
+                    # add up obstacle score to overall score
                     score_overall += score_for_obstacle
+                    # reset counters
                     small_jump_counter = 0
                     medium_jump_counter = 0
                     big_jump_counter = 0
+
                 # generating new obstacle offset each time the obstacle moves out of screen
                 if i_old < width//2 < i:
                     offset1 = random.randint(-height / 3, height / 3)
@@ -81,6 +90,7 @@ def main(width, height, tickrate):
                 if k_old < width // 2 < k:
                     offset3 = random.randint(-height / 3, height / 3)
 
+            # generate obstacle objects
             lower_obstacle1 = pygame.Rect(i, height/2+obstacle_gap/2+offset1, obstacle_width, height-obstacle_gap/2-offset1)
             upper_obstacle1 = pygame.Rect(i, 0, obstacle_width, height/2-obstacle_gap/2+offset1)
             lower_obstacle2 = pygame.Rect(j, height/2+obstacle_gap/2+offset2, obstacle_width, height-obstacle_gap/2-offset2)
@@ -94,6 +104,7 @@ def main(width, height, tickrate):
                 if bird.colliderect(obs):
                     running = False
 
+            # bird gravity
             bird_y += falling_speed
             falling_speed += accel
 
@@ -103,15 +114,15 @@ def main(width, height, tickrate):
                     pygame.quit()
                     sys.exit()
                 if keys[pygame.K_SPACE]:
-                    falling_speed = -accel*50
+                    falling_speed = -accel * 50
                 if keys[pygame.K_a]:
-                    falling_speed = -accel*70
+                    falling_speed = -accel * 70
                     big_jump_counter += 1
                 if keys[pygame.K_s]:
-                    falling_speed = -accel*50
+                    falling_speed = -accel * 50
                     medium_jump_counter += 1
                 if keys[pygame.K_d]:
-                    falling_speed = -accel*30
+                    falling_speed = -accel * 30
                     small_jump_counter += 1
                 if keys[pygame.K_k]:
                     offset1, offset2, offset3 = random.randint(-height / 3, height / 3), random.randint(-height / 3, height / 3), random.randint(-height / 3, height / 3)
