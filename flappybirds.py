@@ -12,7 +12,7 @@ def main(width, height, tickrate):
 
     while True:
         obstacle_speed = 3
-        obstacle_width = 30
+        obstacle_width = width // 28
         obstacle_gap = height / 5
         distance_between_obstacles = width // 3
         i = width
@@ -49,7 +49,7 @@ def main(width, height, tickrate):
             if bird_y >= height:
                 running = False
 
-            bird = pygame.Rect(bird_x, int(bird_y), height // obstacle_width, height // obstacle_width)
+            bird = pygame.Rect(bird_x, int(bird_y), obstacle_width * (2/3), obstacle_width * (2/3))
             pygame.draw.rect(screen, (255, 255, 255), bird, 0)
 
             # at game start move obstacles in from the side
@@ -148,4 +148,4 @@ def main(width, height, tickrate):
 
 
 
-main(1260, 720, 60)
+main(640, 480, 60)
